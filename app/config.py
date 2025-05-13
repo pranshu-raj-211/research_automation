@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     MONGO_DB_URL: str = Field(...)
     MONGO_DB_NAME: str = Field(...)
 
+    REDIS_URL: str = Field(default="redis://localhost:6379/0")
+
     ELASTICSEARCH_URL: AnyHttpUrl = Field(...)
     ES_INDEX_NAME: str = Field("text_chunks")
 
@@ -29,8 +31,9 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-        env_file_encoding = 'utf-8'
+        env_file_encoding = "utf-8"
         case_sensitive = True
+
 
 settings = Settings()
 
@@ -38,10 +41,12 @@ logger = logging.Logger("RA")
 
 logger.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s')
+formatter = logging.Formatter(
+    fmt="%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s"
+)
 
 stream_handler = logging.StreamHandler()
-file_handler = logging.FileHandler(filename='logs/app.log', mode='w')
+file_handler = logging.FileHandler(filename="logs/app.log", mode="w")
 
 stream_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)

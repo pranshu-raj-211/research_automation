@@ -53,3 +53,11 @@ async def get_ingestion_status(filename: str) -> str:
     """Check status of a document by name."""
     record = await db.docs.find_one({"doc_id": filename})
     return record["status"] if record else "not_found"
+
+
+# TODO: doc record validation acc to schemas, improve fields
+async def init_document_model(document_record:dict):
+    try:
+        await db.docs.insert_one(document_record)
+    except Exception:
+        raise Exception("Could not initialize document.")

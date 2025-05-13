@@ -9,7 +9,6 @@ async def ingest_pdf_background(file_bytes: bytes, filename: str):
     splitter = SentenceSplitter(chunk_size=512, chunk_overlap=64)
 
     try:
-
         async def process_page(page_text: str, page_num: int):
             if not page_text.strip():
                 return
