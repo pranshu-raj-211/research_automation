@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(30)
 
     MAX_DOCS_PER_TOPIC: int = Field(10)
+    MAX_DOC_SIZE_MB: int =Field(10)
 
     # BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 

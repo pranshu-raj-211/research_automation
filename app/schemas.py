@@ -17,10 +17,11 @@ class Doc(BaseModel):
     id: str
     topic_id: str
     user_id: str
-    text: list[str] # Links to Text.id
+    text: list[str]  # Links to Text.id
     authors: list[str] = []
     citations: list[str] = []
     schema_version: str
+    status: str  # Added to track ingestion status
 
 
 class ResultsLogEntry(BaseModel):
