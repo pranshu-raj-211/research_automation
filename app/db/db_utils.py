@@ -60,4 +60,5 @@ async def init_document_model(document_record:dict):
     try:
         await db.docs.insert_one(document_record)
     except Exception:
+        logger.exception(f"Failed to init document model: {document_record}")
         raise Exception("Could not initialize document.")
