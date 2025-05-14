@@ -1,20 +1,21 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.main import app
 from app.db.db_utils import init_document_model
 from app.utils.celery_tasks import process_pdf_task
 from app.config import logger, settings
 import uuid
 import os
 
-router = APIRouter(prefix='/docs/')
+router = APIRouter(prefix='/docs')
 
 
-@app.post('/upload/')
+@router.post('/upload')
 async def upload_document(file: UploadFile = File(...)):
+    logger.debug("Document uploaded")
     if file.content_type != 'application/pdf':
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
-    file_size = len(await file.read()) / (1024 * 1024)  # Convert bytes to MB
+    contents = await file.read()
+    file_size = len(contents) / (1024 * 1024)
     if file_size > settings.MAX_DOC_SIZE_MB:
         raise HTTPException(status_code=400, detail=f"File size exceeds {settings.MAX_DOC_SIZE_MB} MB limit.")
 
@@ -23,7 +24,7 @@ async def upload_document(file: UploadFile = File(...)):
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
     with open(filepath, 'wb') as f:
-        f.write(await file.read())
+        f.write(contents)
 
     document_record = {
         "id": task_id,

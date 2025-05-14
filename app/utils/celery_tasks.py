@@ -5,7 +5,7 @@ from app.db.db_utils import init_document_model
 from app.celery_worker import celery_app
 from app.config import logger
 
-@celery_app.task(name="process_pdf_task")
+@celery_app.task(name="app.utils.celery_tasks.process_pdf_task")
 def process_pdf_task(filepath: str, task_id: str):
     try:
         loop = asyncio.get_event_loop()
