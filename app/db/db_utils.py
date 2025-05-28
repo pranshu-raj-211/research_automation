@@ -51,7 +51,7 @@ async def mark_ingestion_status(filename: str, status: str):
 
 async def get_ingestion_status(filename: str) -> str:
     """Check status of a document by name."""
-    record = await db.docs.find_one({"doc_id": filename})
+    record = await db.docs.find_one({"id": filename})
     return record["status"] if record else "not_found"
 
 

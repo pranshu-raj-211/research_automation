@@ -1,5 +1,5 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.db.db_utils import init_document_model
+from fastapi import APIRouter, UploadFile, File, HTTPException, Query
+from app.db.db_utils import init_document_model, get_ingestion_status
 from app.utils.celery_tasks import process_pdf_task
 from app.config import logger, settings
 import uuid
@@ -43,3 +43,12 @@ async def upload_document(file: UploadFile = File(...)):
     logger.info(f"Document {task_id} uploaded and queued for processing.")
 
     return {"code": 202, "message": "Uploaded file for processing", "task_id": task_id}
+
+
+@router.get('/status')
+async def check_document_status(task_id: str = Query(...)):
+    """Check the processing status of a document."""
+    status = await get_ingestion_status(task_id)
+    if status == "not_found":
+        raise HTTPException(status_code=404, detail="Document not found.")
+    return {"task_id": task_id, "status": status}
