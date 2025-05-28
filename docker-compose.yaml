@@ -1,0 +1,25 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_DB_URL=mongodb://mongodb:27017
+      - REDIS_URL=redis://redis:6379/0
