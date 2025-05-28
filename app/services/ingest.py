@@ -7,6 +7,7 @@ from app.config import logger
 
 
 async def ingest_pdf_background(file_bytes: bytes, filename: str):
+    logger.info(f"Received request to ingest file: {filename}")
     splitter = SentenceSplitter(chunk_size=512, chunk_overlap=64)
 
     try:

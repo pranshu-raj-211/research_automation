@@ -40,13 +40,16 @@ async def insert_many_chunks(chunks: list[dict]):
 
 async def mark_ingestion_status(filename: str, status: str):
     """Store or update the ingestion status of a document."""
+    logger.info(f"Marking ingestion status for {filename} as {status}")
     try:
         await db.docs.update_one(
             {"doc_id": filename},
             {"$set": {"status": status}},
             upsert=True
         )
+        logger.info('Ingestion status updated')
     except Exception:
+        logger.exception("Ingestion status could not be updated.")
         raise Exception("Failed to update doc ingestion status")
 
 async def get_ingestion_status(filename: str) -> str:
