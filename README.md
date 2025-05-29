@@ -22,3 +22,15 @@ Start celery
 
 Start Fastapi
 `uvicorn app.main:app --host 0.0.0.0 --port 8000`
+
+
+
+### Done:
+1. Document Pipeline (end to end)
+2. DB utils setup basic
+3. Data model setup
+
+### TODOS:
+1. User and Topic services need to be pushed (in dev).
+2. Chat service needs to be improved (currently non functional).
+3. Potential improvement - use Fastapi background tasks instead of celery+redis.
