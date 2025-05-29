@@ -5,7 +5,7 @@ from app.db.db_utils import init_document_model
 from app.celery_worker import celery_app
 from app.config import logger
 
-@celery_app.task(name="app.utils.celery_tasks.process_pdf_task")
+@celery_app.task(name="app.utils.celery_tasks.process_pdf_task", queue='ingestion')
 def process_pdf_task(filepath: str, task_id: str):
     logger.debug(f"Started on ingestion task: {task_id}")
     try:
@@ -20,7 +20,7 @@ def process_pdf_task(filepath: str, task_id: str):
                 "status": "done"
             }
         }
-        loop.run_until_complete(init_document_model({"id": task_id}, document_update))
+        loop.run_until_complete(init_document_model({"id": task_id, **document_update}))
 
         logger.info(f"Document {task_id} processed successfully.")
     except Exception:

@@ -7,6 +7,8 @@ celery_app = Celery(
     backend=settings.REDIS_URL,
 )
 
+celery_app.conf.imports = ['app.utils.celery_tasks']
+
 celery_app.conf.task_routes = {
     "app.utils.celery_tasks.process_pdf_task": {"queue": "ingestion"},
 }

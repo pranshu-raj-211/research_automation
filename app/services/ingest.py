@@ -1,5 +1,6 @@
 import pdfplumber
 from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core import Document
 
 from app.db.db_utils import insert_many_chunks, mark_ingestion_status
 from app.utils.embeddings import get_embedding
@@ -14,8 +15,13 @@ async def ingest_pdf_background(file_bytes: bytes, filename: str):
         async def process_page(page_text: str, page_num: int):
             if not page_text.strip():
                 return []
+            
+            doc = Document(
+                text=page_text,
+                metadata={"page_number": page_num}
+            )
 
-            nodes = splitter.get_nodes_from_documents([page_text])
+            nodes = splitter.get_nodes_from_documents([doc])
             chunks = []
             for i, node in enumerate(nodes):
                 embedding = await get_embedding(node.text)
@@ -39,9 +45,13 @@ async def ingest_pdf_background(file_bytes: bytes, filename: str):
 
         if all_chunks:
             result = await insert_many_chunks(all_chunks)
-            chunk_ids = [str(chunk.inserted_id) for chunk in result.inserted_ids]
-            logger.info(f"Successfully inserted {len(all_chunks)} chunks into the database.")
-
+            if result:
+                chunk_ids = [str(chunk_id) for chunk_id in result.inserted_ids]
+                logger.info(f"Successfully inserted {len(all_chunks)} chunks into the database.")
+            else:
+                chunk_ids = []
+        else:
+            chunk_ids = []
         await mark_ingestion_status(filename, "success")
         logger.info(f"Ingestion completed successfully for file: {filename}")
 

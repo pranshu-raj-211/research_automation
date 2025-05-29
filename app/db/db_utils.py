@@ -32,7 +32,9 @@ async def insert_many_chunks(chunks: list[dict]):
     """Bulk insert multiple embedded chunks (use for better performance)."""
     try:
         if chunks:
-            await db.text.insert_many(chunks)
+            result = await db.text.insert_many(chunks)
+            return result
+        return None
     except Exception:
         logger.exception("Failed to insert multiple chunks into db")
         raise Exception("Could not insert chunks into db.")
@@ -54,7 +56,7 @@ async def mark_ingestion_status(filename: str, status: str):
 
 async def get_ingestion_status(filename: str) -> str:
     """Check status of a document by name."""
-    record = await db.docs.find_one({"id": filename})
+    record = await db.docs.find_one({"doc_id": filename})
     return record["status"] if record else "not_found"
 
 
