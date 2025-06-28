@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Optional, Any
 from datetime import datetime
 
 
@@ -32,21 +33,6 @@ class ResultsLogEntry(BaseModel):
     subset_of_problem: str
 
 
-class ChatExchange(BaseModel):
-    query: str
-    response: str
-    source_list: list[str]  # Links to Doc/Text
-
-
-class Chat(BaseModel):
-    chat_id: str
-    topic_id: str
-    documents: list[str]  # Links to Doc.id
-    documents_selected: list[bool]
-    schema_version: str
-    exchanges: list[ChatExchange]
-
-
 class Topic(BaseModel):
     id: str
     name: str
@@ -71,3 +57,31 @@ class User(BaseModel):
     updated_at: datetime
     topic_ids: list[str]
     session_id: str
+
+
+class ChatRequest(BaseModel):
+    query: str = Field(..., description="The user's question")
+    topic_id: Optional[str] = Field(None, description="Topic ID to filter results")
+    similarity_top_k: int = Field(
+        10, ge=1, le=50, description="Number of similar chunks to retrieve"
+    )
+    include_sources: bool = Field(
+        True, description="Whether to include source citations"
+    )
+
+
+class ChatResponse(BaseModel):
+    response: str
+    query: str
+    topic_id: Optional[str]
+    sources_count: int
+    sources: Optional[list[dict[str, Any]]] = None
+    error: Optional[str] = None
+
+
+class SimilarChunksRequest(BaseModel):
+    query: str = Field(..., description="The search query")
+    topic_id: Optional[str] = Field(None, description="Topic ID to filter results")
+    limit: int = Field(
+        10, ge=1, le=50, description="Maximum number of chunks to return"
+    )

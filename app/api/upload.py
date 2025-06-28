@@ -9,7 +9,9 @@ router = APIRouter(prefix='/docs')
 
 
 @router.post('/upload')
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(file: UploadFile = None):
+    if file is None:
+        file = File(...)
     logger.debug("Document uploaded")
     if file.content_type != 'application/pdf':
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
